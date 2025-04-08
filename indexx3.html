@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Found</title>
+  <link rel="icon" href="images.png" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #4f46e5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .item-list {
+      max-width: 800px;
+      margin: 30px auto;
+    }
+
+    .item {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border-left: 6px solid red;
+    }
+
+    .item h3 {
+      margin: 0 0 5px;
+    }
+
+    .item small {
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lost</h1>
+
+  <form id="itemForm">
+    <input type="text" id="title" placeholder="Item name" required />
+    <input type="file" id="image" accept="image/*" />
+    <textarea id="description" placeholder="Item Description" required></textarea>
+    <input type="text" id="location" placeholder="Found Location" required />
+    <button type="submit">Submit</button>
+  </form>
+
+  <div class="item-list" id="itemList">
+    <!-- Items will appear here -->
+  </div>
+
+  <script>
+    const form = document.getElementById('itemForm');
+    const list = document.getElementById('itemList');
+    const items = [];
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('title').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const imageInput = document.getElementById('image');
+      const file = imageInput.files[0];
+
+      const addItem = (imageURL) => {
+        const item = {
+          type: 'lost',
+          title,
+          description,
+          location,
+          imageURL: imageURL || null,
+          timestamp: new Date().toLocaleString()
+        };
+        items.push(item);
+        displayItems();
+        form.reset();
+      };
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          addItem(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        addItem(null);
+      }
+    });
+
+    function displayItems() {
+      list.innerHTML = '';
+
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `item`;
+        div.innerHTML = `
+          <h3>${item.title}</h3>
+          <strong style="color:green;">FOUND</strong>
+          <p>${item.description}</p>
+          ${item.imageURL ? `<img src="${item.imageURL}" alt="Item Image" style="max-width:100%; border-radius:6px; margin:10px 0;">` : ''}
+          <p><strong>Location:</strong> ${item.location}</p>
+          <small>${item.timestamp}</small>
+        `;
+        list.appendChild(div);
+      });
+    }
+  </script>
+
+</body>
+</html>
